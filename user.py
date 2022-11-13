@@ -37,7 +37,7 @@ class User:
         if key not in self.sheets_of_interest:
             raise Exception('Problems with key for enquiry')
         value = self.sheets_of_interest[key]
-        print(f"Tracking {value.sheet_key} spreadsheet on page {value.page} in row {value.row_to_track}")
+        print(f'Tracking "{value.sheet_key}" spreadsheet on page {value.page} in row {value.row_to_track}')
         result = sheet_opener.SheetOpener().open_table(value.sheet_key, value.page, value.row_to_track)[0]
         last_result = self.sheets_of_interest[key].last_result
         self.sheets_of_interest[key].last_result = result

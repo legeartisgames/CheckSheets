@@ -10,7 +10,6 @@ def first_greeting():
     names = []
     for i in range(0, len(users)):
         names.append(users[i][0])
-    names.append('Mr X')  # remove it in final version
     if len(names) == 1:
         print('Nice to meet you, {}!'.format(names[0]))
         user_name = names[0]
@@ -96,19 +95,30 @@ def add_spreadsheet(words):
         print("[RESULTS] Spreadsheet {} was added to your list!".format(new_sheet_name))
 
 
-def display_sheets(to_display='name'):
+def display_sheets():
     sheets_list = []
     for sheet_obj in sheet_opener.SheetOpener().sheet_objs.values():
-        sheets_list.append(getattr(sheet_obj, to_display))
+        sheets_list.append(sheet_obj.name)
     if len(sheets_list) == 0:
         print("No available spreadsheets yet. You can add them via add_spreadsheet url name=... key=...")
     else:
-        result = to_display[0].upper() + to_display[1:] + "s of available spreadsheets are: "
+        result = ''  # before was "Names of available spreadsheets are: ", it was found redundant
         sheets_list.sort()
         for i in sheets_list:
             result += i + ', '
         result = result[:-2]
         print(result)
+
+
+def display_sheet_keys():
+    keys_list = {}
+    for sheet_obj in sheet_opener.SheetOpener().sheet_objs.values():
+        keys_list[sheet_obj.key] = sheet_obj.name
+    if len(keys_list) == 0:
+        print("No available spreadsheets yet. You can add them via add_spreadsheet url name=... key=...")
+    else:
+        for key, value in keys_list.items():
+            print(f'"{key}" for spreadsheet "{value}"')
 
 
 def display_targets():
@@ -123,6 +133,15 @@ def display_targets():
         for i in targets:
             print('*', i)
 
+
+def words_starts_with(words_list, string):
+    string_list = string.split()
+    if len(string_list) > len(words_list):
+        return False
+    for i in range(len(string_list)):
+        if string_list[i] != words_list[i]:
+            return False
+    return True
 
 def main():
     global current_user
@@ -143,24 +162,34 @@ def main():
     while True:
         s = input()
         words = s.split()
-        if 'add spreadsheet' in s:
-            add_spreadsheet(words)
-            words = words[5:]
-        if 'add row' in s:
-            add_row(words)
-            words = words[5:]
-        if 'display sheets' in s:
-            display_sheets()
-        if 'display sheet keys' in s:
-            display_sheets('key')
-        if 'display targets' in s:
-            display_targets()
-        if 'watch all targets' in s:
-            for key in current_user.sheets_of_interest:
-                current_user.enquire(key)
-        if 'exit' in s:
-            print("Goodbye, {}!".format(current_user.name))
-            break
+        for i in range(10):
+            if len(words) == 0:
+                break
+            if words_starts_with(words, 'add spreadsheet'):
+                add_spreadsheet(words)
+                words = words[5:]
+            elif words_starts_with(words, 'add row'):
+                add_row(words)
+                words = words[5:]
+            elif words_starts_with(words, 'display sheets'):
+                display_sheets()
+                words = words[2:]
+            elif words_starts_with(words, 'display sheet keys'):
+                display_sheet_keys()
+                words = words[3:]
+            elif words_starts_with(words, 'display targets'):
+                display_targets()
+                words = words[2:]
+            elif words_starts_with(words, 'track all targets'):
+                words = words[3:]
+                for key in current_user.sheets_of_interest:
+                    current_user.enquire(key)
+            elif words_starts_with(words, 'exit'):
+                print('Goodbye, {}!'.format(current_user.name))
+                break
+            else:
+                print(f'[Misprint] "{words[0]}" is unknown command, skipping it')
+                words = words[1:]
 
     current_user.save()
     opener.save_sheets()
