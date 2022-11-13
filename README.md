@@ -8,7 +8,7 @@ As of 13th of November, you need to install on your computer these libraries to 
 2) Sheets Api (https://developers.google.com/sheets/api?hl=en_US)
 
 How to make it ready:
-* pip install psutil
+* `pip install psutil`
 * Check https://developers.google.com/sheets/api/quickstart/python for extensive instructions. In a nutshell:
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 * Open new issue in this repo and write there your email address on google if you want to use the app. Now it's in testing mode and only users with emails from set of testers (which is defined by developer) can use the app
@@ -20,12 +20,12 @@ Though the main force of CheckSheets is it's support of multitasking. You can tr
 
 ## Language of CheckSheets
 For now you can run the app in console or in IDE. By the way, we have plans to make convenient telegram bot of console version. Using of CheckSheets consists of writing some instructions:
-* add spreadsheet [link] name=[title of your sheet] key=[short name for fast instructions]
-Example: add spreadsheet 1ASedAXVIiPtzgeDKf1LI3Fh_VsV87SDgh-4_j1uk8Xw name=ListOfProjects key=201pythonlist # you can omit first and last part of link
-* add row key=[of your sheet] page=[starting from 0] row=[as in Google Sheets]
-Example: add row key=algo page=0 row=20 # algo and 
-* display sheets # see all spreadsheets you added
-* display sheet keys # see all keys of spreadsheets you added
-* display targets # see all target rows you added
-* track all targets # check all targets rows
-* exit # stop the app
+* `add spreadsheet [link] name=[title of your sheet] key=[short name for fast instructions]`
+Example: `add spreadsheet 1ASedAXVIiPtzgeDKf1LI3Fh_VsV87SDgh-4_j1uk8Xw name=ListOfProjects key=201pythonlist` # you can omit first and last part of link
+* `add row key=[of your sheet] page=[starting from 0] row=[as in Google Sheets]`
+Example: `add row key=algo page=0 row=20` # algo and 
+* `display sheets` # see all spreadsheets you added
+* `display sheet keys` # see all keys of spreadsheets you added
+* `display targets` # see all target rows you added
+* `track all targets` # check all targets rows
+* `exit` # stop the app
