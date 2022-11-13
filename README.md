@@ -29,3 +29,9 @@ Example: `add row key=algo page=0 row=20` # algo and
 * `display targets` # see all target rows you added
 * `track all targets` # check all targets rows
 * `exit` # stop the app
+
+## Possible improvements:
+* deleting of target sheets and rows
+* coloring output for terminal with Colorama (https://pypi.python.org/pypi/colorama)
+* normal creation of user, not from computer username(s)
+* creating Windows app (not necessary if telegram-bot will be released, and it seems probable that it will)
