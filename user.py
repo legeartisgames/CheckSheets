@@ -13,8 +13,7 @@ class UserEnq:
 
     @staticmethod
     def get_key_by_sheet_key(sheet_key, page, row_to_track):
-        return "key: {}, page: {}, row: {}".format(sheet_key,
-                                                   page, row_to_track)
+        return f"key: {sheet_key}, page: {page}, row: {row_to_track}"
 
 
 class User:
@@ -27,37 +26,38 @@ class User:
         if key not in self.sheets_of_interest.keys():
             new_user_sheet = UserEnq(sheet.key, row_to_track, page)
             self.sheets_of_interest[key] = new_user_sheet
-            print('[INFO] User {u_name} added enquiry "{enq_name}" to his/her pocket'.format(u_name=self.name,
-                                                                                             enq_name=key))
+            print(f'[INFO] {self.name} added enquiry "{key}" to his/her pocket')
         else:
-            print('[INFO] User {u_name} already has enquiry "{enq_name}" in his/her pocket'.format(u_name=self.name,
-                                                                                                   enq_name=key))
+            print(f'[INFO] {self.name} already has enquiry "{key}" in his/her pocket')
 
     def enquire(self, key):
         if key not in self.sheets_of_interest:
             raise Exception('Problems with key for enquiry')
         value = self.sheets_of_interest[key]
-        print(f'Tracking "{value.sheet_key}" spreadsheet on page {value.page} in row {value.row_to_track}')
-        result = sheet_opener.SheetOpener().open_table(value.sheet_key, value.page, value.row_to_track)[0]
+        print(f'Tracking "{value.sheet_key}" spreadsheet on page '
+              f'{value.page} in row {value.row_to_track}')
+        result = sheet_opener.SheetOpener().open_table(
+            value.sheet_key, value.page, value.row_to_track)[0]
         last_result = self.sheets_of_interest[key].last_result
         self.sheets_of_interest[key].last_result = result
         if not last_result:
-            print("[INFO] That was the first result for enquiry \"{}\". We'll keep tabs on it".format(key))
+            print(f'[INFO] That was the first result for enquiry \"{key}\". '
+                  "We'll keep tabs on it")
             return
         if len(result) > len(last_result):
-            print("[RESULT] Row {} increased in length".format(value.row_to_track))
+            print(f'[RESULT] Row {value.row_to_track} increased in length')
         elif len(result) < len(last_result):
-            print("[RESULT] Row {} diminished in length".format(value.row_to_track))
+            print(f'[RESULT] Row {value.row_to_track} diminished in length')
         else:
             were_differences = False
             for i in range(len(result)):
                 if result[i] != last_result[i]:
                     if not were_differences:
                         print("Differences:")
-                    print('* Was: "{}", now: "{}"'.format(last_result[i], result[i]))
+                    print(f'* Was: "{last_result[i]}", now: "{result[i]}"')
                     were_differences = True
             if not were_differences:
-                print(f"Row {value.row_to_track} is the same: {result}")
+                print(f'Row {value.row_to_track} is the same: {result}')
 
     def save(self):
         with open('pickle/user_{}_info.pkl'.format(self.name), 'wb') as output:
@@ -73,9 +73,3 @@ class User:
             user_info = User(name)
             user_info.save()
         return user_info
-
-
-'''
-add spreadsheet https://docs.google.com/spreadsheets/d/1ItG8pVyAZbAgO5lt7yseaBz3V11X5gW6DvyBCj47URc/edit#gid=0 name=LuntikPosvyat key=luntik
-add row key=luntik page=0 row=10
-'''

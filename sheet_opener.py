@@ -1,4 +1,4 @@
-from __future__ import print_function
+# from __future__ import print_function
 import os.path
 import pickle
 
@@ -57,9 +57,9 @@ class SheetOpener(metaclass=Singleton):
                     create_new_flow = False
                 except RefreshError as ex:
                     create_new_flow = True
-                    print("[ERROR] Refreshing is not possible: " + str(ex))
-                    print("Probably it's because an app is in testing mode so token expires")
-                    print("Anyway, it's safer to create new token")
+                    print(f"[ERROR] Refreshing is not possible: {ex}\n"
+                          "Probably it's because the app is in testing mode so token expires\n"
+                          "Anyway, it's safer to create new token")
             if create_new_flow:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     'credentials.json', SCOPES)
@@ -76,7 +76,8 @@ class SheetOpener(metaclass=Singleton):
         self.sheet_objs[sheet_object.key] = sheet_object
 
     def add_sheet_names_to_sheet_object(self, sheet_object: SheetObject):
-        sheet_metadata = self.service.spreadsheets().get(spreadsheetId=sheet_object.sheet_id).execute()
+        sheet_metadata = self.service.spreadsheets().\
+            get(spreadsheetId=sheet_object.sheet_id).execute()
         sheets = sheet_metadata.get('sheets', '')
         titles = []
         for i in range(len(sheets)):
@@ -91,10 +92,12 @@ class SheetOpener(metaclass=Singleton):
                 print("[INFO] Remembered sheets are extracted")
         except FileNotFoundError:
             print("[INFO] Building new sheets")
-            self.add_sheet_object(SheetObject('1_YSjF5Pakm4NhEc50HfCdy5nPmfAeFeQv2emSuW9UNE',
-                                              'Local Python', 'python_group_rating'))
-            self.add_sheet_object(SheetObject('1s8zPnl0-c1yY1PHNxxatJc9XTajO15v0aFxj6Hcvkug',
-                                              'Algorithms', 'algo'))
+            self.add_sheet_object(SheetObject(
+                '1_YSjF5Pakm4NhEc50HfCdy5nPmfAeFeQv2emSuW9UNE',
+                'Local Python', 'python_group_rating'))
+            self.add_sheet_object(SheetObject(
+                '1s8zPnl0-c1yY1PHNxxatJc9XTajO15v0aFxj6Hcvkug',
+                'Algorithms', 'algo'))
             self.save_sheets()
 
     def save_sheets(self):
@@ -104,10 +107,12 @@ class SheetOpener(metaclass=Singleton):
     def open_table(self, sheet_key, page, number_of_line):
         try:
             sheet = self.service.spreadsheets()
-            range_name = "{name}!{row}:{row}".format(name=self.sheet_objs[sheet_key].sheet_names[page],
-                                                     row=number_of_line)
-            result = sheet.values().get(spreadsheetId=self.sheet_objs[sheet_key].sheet_id,
-                                        range=range_name).execute()
+            range_name = "{name}!{row}:{row}".format(
+                name=self.sheet_objs[sheet_key].sheet_names[page],
+                row=number_of_line)
+            result = sheet.values().get(
+                spreadsheetId=self.sheet_objs[sheet_key].sheet_id,
+                range=range_name).execute()
             values = result.get('values', [])
 
             if not values:
