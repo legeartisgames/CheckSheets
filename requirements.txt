@@ -1,0 +1,6 @@
+How to make it ready:
+Python3 on your computer
+pip install psutil
+Check https://developers.google.com/sheets/api/quickstart/python for extensive instructions.
+In a nutshell: pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+Open new issue in this repo and write there your email address on google if you want to use the app. Now it's in testing mode and only users with emails from set of testers (which is defined by developer) can use the app
