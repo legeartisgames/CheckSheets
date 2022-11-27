@@ -24,17 +24,7 @@ class SheetObject:
         SheetOpener.add_sheet_names_to_sheet_object(SheetOpener(), self)
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class SheetOpener(metaclass=Singleton):
-
+class SheetOpener:
     def __init__(self):
         self.creds = None
         self.service = None
@@ -84,6 +74,7 @@ class SheetOpener(metaclass=Singleton):
             titles.append(sheets[i].get("properties", {}).get("title"))
         sheet_object.sheet_names = titles
 
+    '''
     def load_saved(self):
         try:
             with open('pickle/sheets.pkl', 'rb') as file_sheets:
@@ -101,8 +92,18 @@ class SheetOpener(metaclass=Singleton):
             self.save_sheets()
 
     def save_sheets(self):
+        os.makedirs('pickle', exist_ok=True)
         with open('pickle/sheets.pkl', 'wb') as output:
             pickle.dump(self.sheet_objs, output, pickle.HIGHEST_PROTOCOL)
+    '''
+    def create_dummy_self(self):
+        print("[INFO] Building new sheets")
+        self.add_sheet_object(SheetObject(
+            '1_YSjF5Pakm4NhEc50HfCdy5nPmfAeFeQv2emSuW9UNE',
+            'Local Python', 'python_group_rating'))
+        self.add_sheet_object(SheetObject(
+            '1s8zPnl0-c1yY1PHNxxatJc9XTajO15v0aFxj6Hcvkug',
+            'Algorithms', 'algo'))
 
     def open_table(self, sheet_key, page, number_of_line):
         try:
