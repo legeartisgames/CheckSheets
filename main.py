@@ -15,6 +15,7 @@ from telegram.ext import (
     Updater,
     filters
 )
+
 # Enable logging
 
 logging.basicConfig(
@@ -29,8 +30,10 @@ reply_keyboard = [
     ["Display targets", "Track all targets"],
     ["Exit"]
 ]
+bookmark_tabs_emoji = '\U0001F4D1'
+winking_face_emoji = '\U0001F609'
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-with open('token.txt', 'r') as file:
+with open('bot_token.txt', 'r') as file:
     TOKEN = file.readline()
 
 
@@ -39,19 +42,20 @@ def return_bot():
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    reply_text = ''
     if context.user_data:
-        reply_text = f"Hi again, {update.message.from_user['username']}!"
+        reply_text = f"{winking_face_emoji} Hi again, {update.message.from_user['username']}!"
+        await update.message.reply_text(reply_text, reply_markup=markup)
+        await main_sheet.EnqProcessor.read_input(context, 'track all targets')
     else:
-        reply_text += "Hi! I am Check Sheets Bot. I can track your spreadsheets in Google docs and inform you " \
-                 "about changes!\n"
+        reply_text = f"{bookmark_tabs_emoji}Hi! I am Check Sheets Bot. I can track your"\
+                    f" spreadsheets in Google docs and inform you about changes!\n"
         reply_text += (
             "You are newcomer so it will be good of you to tell me what to track."
         )
         context.user_data['sheet_opener'] = sheet_opener.SheetOpener()
         context.user_data['sheet_opener'].create_dummy_self()
         context.user_data['user_obj'] = user.User(update, return_bot)
-    await update.message.reply_text(reply_text, reply_markup=markup)
+        await update.message.reply_text(reply_text, reply_markup=markup)
     return CHOOSING
 
 
@@ -77,7 +81,6 @@ async def command_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return PARAMETERS_CHOICE
     if res == 'UnknownCommand':
         await update.message.reply_text("Sorry I didn't understand it.")
-
     '''
     global application
     job_queue = application.job_queue
@@ -115,7 +118,7 @@ async def exit_bot(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 def main() -> None:
     """Run the bot."""
     global application
-    persistence = PicklePersistence(filepath="checksheets")
+    persistence = PicklePersistence(filepath="checksheets_data")
     application = Application.builder().token(TOKEN).\
         persistence(persistence).build()
 

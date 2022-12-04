@@ -1,6 +1,6 @@
 # from __future__ import print_function
+import datetime
 import os.path
-import pickle
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -29,6 +29,7 @@ class SheetOpener:
         self.creds = None
         self.service = None
         self.establish_connection()
+        self.last_connection_time = datetime.datetime.today()
         self.sheet_objs = dict()
 
     def establish_connection(self):
@@ -61,6 +62,7 @@ class SheetOpener:
             self.service = build('sheets', 'v4', credentials=self.creds)
         except HttpError as err:
             print(err)
+        self.last_connection_time = datetime.datetime.today()
 
     def add_sheet_object(self, sheet_object: SheetObject):
         self.sheet_objs[sheet_object.key] = sheet_object
@@ -74,28 +76,6 @@ class SheetOpener:
             titles.append(sheets[i].get("properties", {}).get("title"))
         sheet_object.sheet_names = titles
 
-    '''
-    def load_saved(self):
-        try:
-            with open('pickle/sheets.pkl', 'rb') as file_sheets:
-                sheet_objs = pickle.load(file_sheets)
-                self.sheet_objs = sheet_objs
-                print("[INFO] Remembered sheets are extracted")
-        except FileNotFoundError:
-            print("[INFO] Building new sheets")
-            self.add_sheet_object(SheetObject(
-                '1_YSjF5Pakm4NhEc50HfCdy5nPmfAeFeQv2emSuW9UNE',
-                'Local Python', 'python_group_rating'))
-            self.add_sheet_object(SheetObject(
-                '1s8zPnl0-c1yY1PHNxxatJc9XTajO15v0aFxj6Hcvkug',
-                'Algorithms', 'algo'))
-            self.save_sheets()
-
-    def save_sheets(self):
-        os.makedirs('pickle', exist_ok=True)
-        with open('pickle/sheets.pkl', 'wb') as output:
-            pickle.dump(self.sheet_objs, output, pickle.HIGHEST_PROTOCOL)
-    '''
     def create_dummy_self(self):
         print("[INFO] Building new sheets")
         self.add_sheet_object(SheetObject(
@@ -106,6 +86,9 @@ class SheetOpener:
             'Algorithms', 'algo'))
 
     def open_table(self, sheet_key, page, number_of_line):
+        if (datetime.datetime.today() - self.last_connection_time).days > 3:
+            self.establish_connection()
+
         try:
             sheet = self.service.spreadsheets()
             range_name = "{name}!{row}:{row}".format(

@@ -1,18 +1,14 @@
+import json
 import random
 
 from telegram import Update
 from telegram.ext import ContextTypes
 import sheet_opener
 
-inquisitor_sticker = "CAACAgIAAxkBAAEaZExjg10siWYVc-564wkQkg5n8tpw8AACDQQAAs9fiwea5hLxrvLEZCsE"
-owl_sticker = "CAACAgIAAxkBAAEaZHBjg2JAmnLxCJJrRH1uwHwvx42kHAACxwIAAs9fiwdxXUx0SM7_lSsE"
-fellini_sticker = "CAACAgIAAxkBAAEaZHJjg2LrXLLy7t93XU68Jq53jJ4B-QACRAgAAnlc4glkrEpkZJoLWSsE"
-dyno_laptop_sticker = "CAACAgIAAxkBAAEaZHhjg2N4HkErFruUmwNV5SE83zhpYAACeQADECECEDUyG6uAD9F_KwQ"
-game_of_thrones_sticker = "CAACAgEAAxkBAAEaZIJjg2QO6YQ65dJHFO_hiaMEJVGb0AACqwkAAr-MkATh82QK_QHjPCsE"
-neo_sticker = "CAACAgIAAxkBAAEaZIZjg2S4TLkEszxCLuvGEgzfeoPEwQACcQIAAtzyqwcgmnJDHdtEXSsE"
-stickers = [inquisitor_sticker, owl_sticker, owl_sticker,
-            fellini_sticker, dyno_laptop_sticker,
-            neo_sticker, game_of_thrones_sticker]
+with open('stickers.json', 'r') as f:
+    stickers_dict = json.load(f)
+eyes_emoji = '\U0001F440'
+grinning_cat_emoji = '\U0001F63A'
 
 
 class UserEnq:
@@ -40,9 +36,9 @@ class User:
         if key not in self.sheets_of_interest.keys():
             new_user_sheet = UserEnq(sheet.key, row_to_track, page)
             self.sheets_of_interest[key] = new_user_sheet
-            await self.tel_print(f'[INFO] {self.name} added enquiry "{key}" to his/her pocket')
+            await self.tel_print(f'{eyes_emoji} {self.name} added enquiry "{key}" to his/her pocket')
         else:
-            await self.tel_print(f'[INFO] {self.name} already has enquiry "{key}" in his/her pocket')
+            await self.tel_print(f'{grinning_cat_emoji} {self.name} already has enquiry "{key}" in his/her pocket')
 
     async def enquire(self, key, context: ContextTypes.DEFAULT_TYPE):
         if key not in self.sheets_of_interest:
@@ -52,6 +48,7 @@ class User:
                   f'{value.page} in row {value.row_to_track}:\n'
         result = context.user_data['sheet_opener'].open_table(
             value.sheet_key, value.page, value.row_to_track)[0]
+        print("Have results")
         last_result = self.sheets_of_interest[key].last_result
         self.sheets_of_interest[key].last_result = result
         if not last_result:
@@ -59,7 +56,7 @@ class User:
                        "We'll keep tabs on it\n"
             await self.tel_print(message.strip())
             return
-        sticker = random.choice(stickers)
+        sticker = random.choice(list(stickers_dict.values()))
         if len(result) > len(last_result):
             message += f'[RESULT] Row {value.row_to_track} increased in length\n'
             await self.bot_func().send_sticker(chat_id=self.user_id, sticker=sticker)
@@ -71,7 +68,7 @@ class User:
             for i in range(len(result)):
                 if result[i] != last_result[i]:
                     if not were_differences:
-                        message += "Differences:\n"
+                        message += "<b>Differences</b>:\n"
                     message += f'* Was: "{last_result[i]}", now: "{result[i]}"\n'
                     were_differences = True
             if not were_differences:
@@ -81,4 +78,4 @@ class User:
         await self.tel_print(message.strip())
 
     async def tel_print(self, msg=''):
-        await self.bot_func().sendMessage(chat_id=self.user_id, text=msg)
+        await self.bot_func().sendMessage(chat_id=self.user_id, text=msg, parse_mode='HTML')

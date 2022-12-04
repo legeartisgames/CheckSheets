@@ -9,6 +9,10 @@ class CustomException(Exception):
         super().__init__(msg, *args, **kwargs)
 
 
+sunglasses_face = '\U0001F60E'
+warning_sign_emoji = '\U00002757'
+
+
 class EnqProcessor:
     @staticmethod
     async def read_input(context: ContextTypes.DEFAULT_TYPE, text='', words=None):
@@ -38,20 +42,20 @@ class EnqProcessor:
                     await EnqProcessor.add_row(context, words)
                 except CustomException as e:
                     if e.msg == 'no sheet key':
-                        return "\U00002757 You haven't set sheet key!"
+                        return f"{warning_sign_emoji}You haven't set sheet key!"
                     if e.msg == 'no row':
-                        return "[ERROR] You haven't set row to track!"
+                        return f"{warning_sign_emoji}You haven't set row to track!"
                     if e.msg == 'no page':
-                        return "[ERROR] You haven't set page to track!"
+                        return f"{warning_sign_emoji}You haven't set page to track!"
 
             elif text == 'add spreadsheet':
                 try:
                     await EnqProcessor.add_spreadsheet(context, words)
                 except CustomException as e:
                     if e.msg == 'no sheet name':
-                        return "[ERROR] You haven't set sheet name!"
+                        return f"{warning_sign_emoji}You haven't set sheet name!"
                     if e.msg == 'no sheet link':
-                        return "[ERROR] You haven't set sheet link!"
+                        return f"{warning_sign_emoji}You haven't set sheet link!"
             else:
                 return 'BadText'
 
@@ -100,24 +104,24 @@ class EnqProcessor:
         for i in context.user_data['sheet_opener'].sheet_objs.values():
             if i.sheet_id == new_sheet_id:
                 await context.user_data['user_obj'].tel_print(
-                    "[ERROR] You've already registered that table")
+                    f"{warning_sign_emoji} You've already registered that table")
                 was_existing = True
                 break
             if i.key == new_sheet_key:
                 await context.user_data['user_obj'].tel_print(
-                    "[ERROR] You've already used that key, choose another one")
+                    f"{warning_sign_emoji} You've already used that key, choose another one")
                 was_existing = True
                 break
             if i.name == new_sheet_name:
                 await context.user_data['user_obj'].tel_print(
-                    "[ERROR] You've already used that name, choose another one")
+                    f"{warning_sign_emoji} You've already used that name, choose another one")
                 was_existing = True
                 break
         if not was_existing:
             context.user_data['sheet_opener'].add_sheet_object(
                 sheet_opener.SheetObject(new_sheet_id, new_sheet_name, new_sheet_key))
             await context.user_data['user_obj'].tel_print(
-                f'[RESULTS] Spreadsheet {new_sheet_name} was added to your list!')
+                f'{sunglasses_face} Spreadsheet {new_sheet_name} was added to your list!')
 
     @staticmethod
     async def display_sheets(context: ContextTypes.DEFAULT_TYPE):
