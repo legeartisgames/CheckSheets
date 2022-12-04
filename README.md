@@ -3,9 +3,7 @@
 This repository contains python code for running CheckSheetsBot, which gives user an opportunity to check spreadsheets on Google Sheets.
 
 As of 4th of December 2022, you need to install on your computer these libraries to run the app:
-
-Sheets Api (https://developers.google.com/sheets/api?hl=en_US)
-Python-Telegram-Bot (https://github.com/python-telegram-bot/python-telegram-bot)
+Sheets Api (https://developers.google.com/sheets/api?hl=en_US), Python-Telegram-Bot (https://github.com/python-telegram-bot/python-telegram-bot)
 
 How to make it ready:
 * Check https://developers.google.com/sheets/api/quickstart/python for extensive instructions. In a nutshell:
